@@ -1,6 +1,6 @@
 # Hackerrank
 
-**TODO: Add description**
+HackerRank functional language problems
 
 ## Installation
 
