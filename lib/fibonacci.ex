@@ -1,4 +1,9 @@
 defmodule Fibonacci do
+  @moduledoc """
+  https://www.hackerrank.com/challenges/functional-programming-warmups-in-recursion---fibonacci-numbers/problem
+  [x] Solved
+  """
+
   def main do
     [a] = IO.read(:stdio, :line)
     |> String.split([" ", "\n"])

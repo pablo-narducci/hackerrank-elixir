@@ -1,17 +1,9 @@
 defmodule GCD do
   @moduledoc """
-  Documentation for `Hackerrank`.
+  https://www.hackerrank.com/challenges/functional-programming-warmups-in-recursion---gcd/problem
+  [x] Solved
   """
 
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> Hackerrank.hello()
-      :world
-
-  """
   def main do
     [a, b] = IO.read(:stdio, :line)
     |> String.split([" ", "\n"])

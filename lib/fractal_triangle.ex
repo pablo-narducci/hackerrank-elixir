@@ -1,4 +1,8 @@
 defmodule FractalTriangle do
+  @moduledoc """
+  https://www.hackerrank.com/challenges/functions-and-fractals-sierpinski-triangles/problem
+  [x] Solved
+  """
 
   @height 32
   @width @height * 2 - 1

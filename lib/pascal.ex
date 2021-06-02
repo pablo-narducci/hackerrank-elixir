@@ -1,4 +1,8 @@
 defmodule Pascal do
+  @moduledoc """
+  https://www.hackerrank.com/challenges/pascals-triangle/problem
+  [x] Solved
+  """
 
   def main do
     [a] = IO.read(:stdio, :line)
