@@ -193,6 +193,21 @@ defmodule HackerrankTest do
   assert actual == :lists.sort(result)
   end
 
+  @tag :wip
+  test "Can complete unsorted crossword" do
+    grid = [
+      %{11 => "-", 12 => "-", 13 => "-", 14 => "-", 15 => "-", 16 => "-", 17 => "-"},
+      %{1 => "-", 11 => "-", 21 => "-", 31 => "-", 41 => "-", 51 => "-", 61 => "-"}
+    ]
+
+  words = ["ANDAMAN", "MANIPUR"]
+  |> Enum.map(&String.graphemes(&1))
+
+  actual = :lists.sort(Crosswords101.main_complete(grid, words))
+
+  assert length(actual) == 2
+  end
+
   test "Should not complete crossword when the sizes are correct but the words do not match" do
     grid = [%{
       1  => "-",

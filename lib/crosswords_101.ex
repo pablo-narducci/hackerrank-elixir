@@ -15,12 +15,29 @@ defmodule Crosswords101 do
   # fits? word_template Map<int, char>, word : string -> bool
 
   def fits?(word_template, word) when map_size(word_template) != length(word) do
+    IO.puts("Does not fit (by size)")
     false
   end
 
   def fits?(word_template, word) do
-    Enum.zip([Map.values(word_template), word])
+    IO.inspect(word_template)
+    IO.inspect(word)
+    result = Enum.zip([Map.values(word_template), word])
     |> Enum.all?(fn {k, v} -> if k == "-", do: true, else: k == v end)
+
+    if result do
+      IO.write("Fits: ")
+      IO.inspect(word)
+    else
+      IO.puts("Does not fit (by content)")
+      IO.write("Word: ")
+      IO.inspect(word)
+
+      IO.write("Word Template: ")
+      IO.inspect(word_template)
+    end
+
+    result
   end
 
   def fit(word_template, word) do
@@ -48,17 +65,24 @@ defmodule Crosswords101 do
     if (fits?(rem, word)) do
       fit(rem, word, [], done)
     else
-      {[],[]}
+      #{[],[]}
+      nil
     end
   end
 
   def complete({done, remaining}, words) do
     [current|rest] = remaining
 
-    words
+    result = words
     |> Enum.filter(fn x -> fits?(current, x) end)
-    |> Enum.map(fn x -> complete(fit(current, x, rest, done), List.delete(words, x)) end)
+    |> Enum.map(fn x -> {fit(current, x, rest, done), List.delete(words, x)} end)
+    |> Enum.map(fn {x,y} -> complete(x, y) end)
+    |> Enum.filter(fn x -> x != nil end)
     |> List.first
+
+    IO.inspect(result)
+    result
+    #|> List.first
   end
 
   def main_complete(remaining, words) do
@@ -78,7 +102,7 @@ defmodule Crosswords101 do
 
   def read_line(n, accum) do
     curr = IO.read(:stdio, :line)
-    |> String.trim("\n")
+    |> String.trim
     |> String.graphemes
 
     read_line(n-1, [curr|accum])
@@ -86,7 +110,7 @@ defmodule Crosswords101 do
 
   def parse_names(names) do
     names
-    |> String.trim("\n")
+    |> String.trim
     |> String.split(";")
     |> Enum.map(&String.graphemes(&1))
   end
@@ -100,6 +124,12 @@ defmodule Crosswords101 do
 
     word_templates = to_grid(lines)
     |> to_word_templates
+
+    words
+    |> IO.inspect
+
+    word_templates
+    |> IO.inspect
 
     main_complete(word_templates, words)
     |> to_print
@@ -139,7 +169,7 @@ defmodule Crosswords101 do
   end
 
   def search_row(_,_,10, current, accum) do
-    if current != %{} do
+    if map_size(current) > 1 do
       [current | accum]
     else
       accum
@@ -160,7 +190,7 @@ defmodule Crosswords101 do
   end
 
   def search_column(_,10,_, current, accum) do
-    if current != %{} do
+    if map_size(current) > 1 do
       [current | accum]
     else
       accum
