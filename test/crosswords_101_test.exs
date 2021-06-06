@@ -1,4 +1,4 @@
-defmodule HackerrankTest do
+defmodule Crosswords101Test do
   use ExUnit.Case
   doctest Crosswords101
 
@@ -295,12 +295,6 @@ defmodule HackerrankTest do
   test "can parse line" do
     #Crosswords101.to_map(2, 0, String.graphemes("++--+-"), %{})
     #|>IO.inspect
-  end
-
-  test "can parse multiple lines" do
-    [String.graphemes("++--+-"), String.graphemes("+----+")]
-    |>Crosswords101.to_grid
-    |>IO.inspect
   end
 
   test "lines are converted to grid" do

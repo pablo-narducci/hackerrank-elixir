@@ -1,7 +1,7 @@
 defmodule Crosswords101 do
   @moduledoc """
   https://www.hackerrank.com/challenges/crosswords-101/problem
-  [ ] Solved
+  [x] Solved
   """
   # Word representation:
   # %{32 => 'A', 33 => 'B', 34 => 'C' }
@@ -14,30 +14,15 @@ defmodule Crosswords101 do
 
   # fits? word_template Map<int, char>, word : string -> bool
 
+  @size 10
+
   def fits?(word_template, word) when map_size(word_template) != length(word) do
-    IO.puts("Does not fit (by size)")
     false
   end
 
   def fits?(word_template, word) do
-    IO.inspect(word_template)
-    IO.inspect(word)
-    result = Enum.zip([Map.values(word_template), word])
+    Enum.zip([Map.values(word_template), word])
     |> Enum.all?(fn {k, v} -> if k == "-", do: true, else: k == v end)
-
-    if result do
-      IO.write("Fits: ")
-      IO.inspect(word)
-    else
-      IO.puts("Does not fit (by content)")
-      IO.write("Word: ")
-      IO.inspect(word)
-
-      IO.write("Word Template: ")
-      IO.inspect(word_template)
-    end
-
-    result
   end
 
   def fit(word_template, word) do
@@ -65,7 +50,6 @@ defmodule Crosswords101 do
     if (fits?(rem, word)) do
       fit(rem, word, [], done)
     else
-      #{[],[]}
       nil
     end
   end
@@ -73,16 +57,12 @@ defmodule Crosswords101 do
   def complete({done, remaining}, words) do
     [current|rest] = remaining
 
-    result = words
+    words
     |> Enum.filter(fn x -> fits?(current, x) end)
     |> Enum.map(fn x -> {fit(current, x, rest, done), List.delete(words, x)} end)
     |> Enum.map(fn {x,y} -> complete(x, y) end)
     |> Enum.filter(fn x -> x != nil end)
     |> List.first
-
-    IO.inspect(result)
-    result
-    #|> List.first
   end
 
   def main_complete(remaining, words) do
@@ -116,7 +96,7 @@ defmodule Crosswords101 do
   end
 
   def main do
-    lines = read_line(10,[])
+    lines = read_line(@size,[])
     |> Enum.reverse
 
     words = IO.read(:stdio, :line)
@@ -124,12 +104,6 @@ defmodule Crosswords101 do
 
     word_templates = to_grid(lines)
     |> to_word_templates
-
-    words
-    |> IO.inspect
-
-    word_templates
-    |> IO.inspect
 
     main_complete(word_templates, words)
     |> to_print
@@ -139,7 +113,7 @@ defmodule Crosswords101 do
   end
 
   def to_grid(lines) do
-    Enum.zip(0..9, lines)
+    Enum.zip(0..(@size-1), lines)
     |> Enum.map(fn {x, y} -> to_map(x, 0, y, %{}) end)
     |> Enum.reduce(%{}, fn x, acc -> Map.merge(x, acc) end)
   end
@@ -153,22 +127,22 @@ defmodule Crosswords101 do
   end
 
   def to_map(row, col, [curr_char | rest], accum) when curr_char == "-" do
-    to_map(row, col + 1, rest, Map.put(accum, row * 10 + col,"-"))
+    to_map(row, col + 1, rest, Map.put(accum, row * @size + col,"-"))
   end
 
   def to_word_templates(all_spots) do
-    rows = 0..9
+    rows = 0..(@size-1)
     |> Enum.map(&search_row(all_spots, &1, 0, %{}, []))
     |> Enum.reduce([], fn x, acc -> x ++ acc end)
 
-    cols = 0..9
+    cols = 0..(@size-1)
     |> Enum.map(&search_column(all_spots, 0, &1, %{}, []))
     |> Enum.reduce([], fn x, acc -> x ++ acc end)
 
     rows ++ cols
   end
 
-  def search_row(_,_,10, current, accum) do
+  def search_row(_,_,@size, current, accum) do
     if map_size(current) > 1 do
       [current | accum]
     else
@@ -177,7 +151,7 @@ defmodule Crosswords101 do
   end
 
   def search_row(all_spots, row, col, current, accum) do
-    key = row * 10 + col
+    key = row * @size + col
     if Map.has_key?(all_spots, key) do
       search_row(all_spots, row, col + 1, Map.put(current, key, "-"), accum)
     else
@@ -189,7 +163,7 @@ defmodule Crosswords101 do
     end
   end
 
-  def search_column(_,10,_, current, accum) do
+  def search_column(_,@size,_, current, accum) do
     if map_size(current) > 1 do
       [current | accum]
     else
@@ -198,7 +172,7 @@ defmodule Crosswords101 do
   end
 
   def search_column(all_spots, row, col, current, accum) do
-    key = row * 10 + col
+    key = row * @size + col
     if Map.has_key?(all_spots, key) do
       search_column(all_spots, row + 1, col, Map.put(current, key, "-"), accum)
     else
@@ -211,12 +185,12 @@ defmodule Crosswords101 do
   end
 
   def to_print(grid) do
-    0..9
+    0..(@size-1)
     |> Enum.map(&print_row(&1, 0, grid, []))
     |> Enum.map(&Enum.reverse(&1))
   end
 
-  def print_row(_, 10, _, accum) do
+  def print_row(_, @size, _, accum) do
     accum
   end
 
@@ -226,7 +200,7 @@ defmodule Crosswords101 do
   end
 
   def get_template_spot(row, column, grid) do
-    key = row * 10 + column
+    key = row * @size + column
     grid
     |> Enum.filter(&Map.has_key?(&1, key))
     |> List.first
