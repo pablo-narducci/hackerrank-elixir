@@ -97,7 +97,27 @@ defmodule HackerrankTest do
     assert Crosswords101.fit(word_template, String.graphemes("LONDON")) == result
   end
 
-  test "Try complete" do
+  @tag :skip
+  test "update existing word" do
+    existing_word = %{
+      11 => "-",
+      21 => "-",
+      31 => "-"
+    }
+
+    current_word = %{21 => "X"}
+
+    result = %{
+      11 => "-",
+      21 => "X",
+      31 => "-"
+    }
+
+    assert Crosswords101.update_word_template(existing_word, current_word) == result
+
+  end
+
+  test "Can complete crossword" do
     grid = [%{
       1  => "-",
       11 => "-",
@@ -169,8 +189,92 @@ defmodule HackerrankTest do
     }
   ]
 
-  #IO.inspect(Crosswords101.complete({[], grid}, words))
+  actual = :lists.sort(Crosswords101.main_complete(grid, words))
 
-  assert :lists.sort(Crosswords101.complete({[], grid}, words)) == :lists.sort(result)
+  assert actual == :lists.sort(result)
+  end
+
+  test "Should not complete crossword when the sizes are correct but the words do not match" do
+    grid = [%{
+      1  => "-",
+      11 => "-",
+      21 => "-",
+      31 => "-",
+      41 => "-",
+      51 => "-"
+    },
+    %{
+      31 => "-",
+      32 => "-",
+      33 => "-",
+      34 => "-",
+      35 => "-"
+    },
+    %{
+      35 => "-",
+      45 => "-",
+      55 => "-",
+      65 => "-",
+      75 => "-",
+      85 => "-",
+      95 => "-"
+    },
+    %{
+      72 => "-",
+      73 => "-",
+      74 => "-",
+      75 => "-",
+      76 => "-",
+      77 => "-"
+    }
+  ]
+
+  words = ["LONYON", "DELHI", "ICELAND", "ANKARA"]
+  |> Enum.map(&String.graphemes(&1))
+
+  result = []
+
+  actual = :lists.sort(Crosswords101.main_complete(grid, words))
+
+  assert actual == :lists.sort(result)
+  end
+
+  test "Complete can deal with multiple fits" do
+    grid = [%{
+      13  => "-",
+      23 => "-",
+      33 => "-",
+      43 => "-",
+      53 => "-"
+    },
+    %{
+      15  => "-",
+      25 => "-",
+      35 => "-",
+      45 => "-",
+      55 => "-"
+    },
+    %{
+      22  => "-",
+      23 => "-",
+      24 => "-",
+      25 => "-",
+      26 => "-"
+    },
+    %{
+      42  => "-",
+      43 => "-",
+      44 => "-",
+      45 => "-",
+      46 => "-"
+    },
+  ]
+
+  words = ["AXAXA", "BXBXB", "CXCXC", "DXDXD"]
+  |> Enum.map(&String.graphemes(&1))
+
+  actual = Crosswords101.main_complete(grid, words)
+
+  assert length(actual) == 4
   end
 end

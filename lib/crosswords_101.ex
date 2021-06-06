@@ -28,23 +28,46 @@ defmodule Crosswords101 do
     |> Enum.reduce(%{}, fn {k, v}, acc -> Map.put(acc, k, v) end)
   end
 
+  def fit(word_template, word, remaining, done) do
+    current = fit(word_template, word)
+
+    remaining = remaining
+    |> Enum.map(&update_word_template(&1, current))
+
+    {[current|done], remaining}
+  end
+
+  def update_word_template(existing, current) do
+    existing
+    |> Enum.reduce(%{},fn {k, v}, acc -> Map.put(acc, k, (if Map.has_key?(current, k), do: current[k], else: v)) end)
+  end
+
   def complete({done, remaining}, words) when length(words) == 1 do
     [word] = words
     [rem] = remaining
     if (fits?(rem, word)) do
-      [fit(rem, word) | done]
+      fit(rem, word, [], done)
     else
-      []
+      {[],[]}
     end
   end
 
   def complete({done, remaining}, words) do
-    IO.puts("Done: #{length(done)}. Remaining: #{length(remaining)}. Words #{length(words)}")
     [current|rest] = remaining
+
     words
     |> Enum.filter(fn x -> fits?(current, x) end)
-    |> Enum.map(fn x -> complete({[fit(current, x) | done], rest}, List.delete(words, x)) end)
+    |> Enum.map(fn x -> complete(fit(current, x, rest, done), List.delete(words, x)) end)
     |> List.first
   end
+
+  def main_complete(remaining, words) do
+    complete({[], remaining}, words)
+    |> first_or_nil
+  end
+
+  def first_or_nil(nil), do: []
+
+  def first_or_nil({done, _}), do: done
 
 end
