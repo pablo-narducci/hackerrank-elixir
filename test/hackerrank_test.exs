@@ -97,7 +97,6 @@ defmodule HackerrankTest do
     assert Crosswords101.fit(word_template, String.graphemes("LONDON")) == result
   end
 
-  @tag :skip
   test "update existing word" do
     existing_word = %{
       11 => "-",
@@ -277,4 +276,86 @@ defmodule HackerrankTest do
 
   assert length(actual) == 4
   end
+
+  test "can parse line" do
+    #Crosswords101.to_map(2, 0, String.graphemes("++--+-"), %{})
+    #|>IO.inspect
+  end
+
+  test "can parse multiple lines" do
+    [String.graphemes("++--+-"), String.graphemes("+----+")]
+    |>Crosswords101.to_grid
+    |>IO.inspect
+  end
+
+  test "lines are converted to grid" do
+    parsed_lines = [
+      ["+", "-", "+", "+", "+", "+", "+", "+", "+", "+"],
+      ["+", "-", "+", "+", "+", "+", "+", "+", "+", "+"],
+      ["+", "-", "+", "+", "+", "+", "+", "+", "+", "+"],
+      ["+", "-", "-", "-", "-", "-", "+", "+", "+", "+"],
+      ["+", "-", "+", "+", "+", "-", "+", "+", "+", "+"],
+      ["+", "-", "+", "+", "+", "-", "+", "+", "+", "+"],
+      ["+", "+", "+", "+", "+", "-", "+", "+", "+", "+"],
+      ["+", "+", "-", "-", "-", "-", "-", "-", "+", "+"],
+      ["+", "+", "+", "+", "+", "-", "+", "+", "+", "+"],
+      ["+", "+", "+", "+", "+", "-", "+", "+", "+", "+"]
+    ]
+
+    expected = [%{
+      1  => "-",
+      11 => "-",
+      21 => "-",
+      31 => "-",
+      41 => "-",
+      51 => "-"
+    },
+    %{
+      31 => "-",
+      32 => "-",
+      33 => "-",
+      34 => "-",
+      35 => "-"
+    },
+    %{
+      35 => "-",
+      45 => "-",
+      55 => "-",
+      65 => "-",
+      75 => "-",
+      85 => "-",
+      95 => "-"
+    },
+    %{
+      72 => "-",
+      73 => "-",
+      74 => "-",
+      75 => "-",
+      76 => "-",
+      77 => "-"
+    }
+  ]
+
+  actual = parsed_lines
+  |> Crosswords101.to_grid
+  |> Crosswords101.to_word_templates
+
+  assert :lists.sort(actual) == :lists.sort(expected)
+
+  end
+
+  test "can parse city names" do
+    line = "LONDON;DELHI;ICELAND;ANKARA"
+
+    expected = [
+      ["L", "O", "N", "D", "O", "N"],
+      ["D", "E", "L", "H", "I"],
+      ["I", "C", "E", "L", "A", "N", "D"],
+      ["A", "N", "K", "A", "R", "A"]
+    ]
+
+    assert Crosswords101.parse_names(line) == expected
+  end
+
+
 end
